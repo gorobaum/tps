@@ -23,7 +23,7 @@ class TPS:
 		zeros = np.array([0,0,0])
 		ones = np.ones(numberOfCPs)
 		coefMatrix = np.zeros([numberOfEquations, numberOfEquations])
-		coefMatrix[0] = np.concatenate((zeros,ones))
+		coefMatrix[0] = np.append(zeros,ones)
 		coefMatrix[1] = np.append(zeros, self.staticCPs.xs)
 		coefMatrix[2] = np.append(zeros, self.staticCPs.ys)
 		for n in range(numberOfCPs):
