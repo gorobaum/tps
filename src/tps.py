@@ -38,13 +38,51 @@ class TPS:
 		return coefMatrix
 
 	def solveLinearEquationFor(self, ordinates):
+		# print self.coefMatrix
+		# print ordinates
 		return np.linalg.solve(self.coefMatrix, ordinates)
 
 	def solveLinearEquation(self):
 		self.coefMatrix = self.createCoefMatrix()
 		zeros = np.array([0,0,0])
 		ordinatesX = np.append(zeros, self.movingCPs.xs)
-		print self.solveLinearEquationFor(ordinatesX)
+		self.systemX = self.solveLinearEquationFor(ordinatesX)
+		print self.systemX
 		ordinatesY = np.append(zeros, self.movingCPs.ys)
-		print self.solveLinearEquationFor(ordinatesY)
+		self.systemY = self.solveLinearEquationFor(ordinatesY)
+		print self.systemY
 
+	def interpolateInX(self, x ,y):
+		rigid = self.systemX[0] + x*self.systemX[1] + y*self.systemX[2]
+		numberOfCPs = self.staticCPs.len
+		sumOfFs = 0
+		for n in range(numberOfCPs):
+			xi = self.staticCPs.xs[n]
+			yi = self.staticCPs.ys[n]
+			sumOfFs = sumOfFs + self.systemX[n+3]*self.sumInteration(x,y,xi,yi)
+		return round(rigid+sumOfFs)
+
+	def interpolateInY(self, x ,y):
+		rigid = self.systemY[0] + x*self.systemY[1] + y*self.systemY[2]
+		numberOfCPs = self.staticCPs.len
+		sumOfFs = 0
+		for n in range(numberOfCPs):
+			xi = self.staticCPs.xs[n]
+			yi = self.staticCPs.ys[n]
+			sumOfFs = sumOfFs + self.systemY[n+3]*self.sumInteration(x,y,xi,yi)
+		return round(rigid+sumOfFs)
+
+	def interpolateIn(self, x, y):
+		x = self.interpolateInX(x,y)
+		y = self.interpolateInY(x,y)
+		return (x,y)
+
+	def interpolateInWith(self, x ,y, systemX):
+		rigid = systemX[0] + x*systemX[1] + y*systemX[2]
+		numberOfCPs = self.staticCPs.len
+		sumOfFs = 0
+		for n in range(numberOfCPs):
+			xi = self.staticCPs.xs[n]
+			yi = self.staticCPs.ys[n]
+			sumOfFs = sumOfFs + systemX[n+3]*self.sumInteration(x,y,xi,yi)
+		return round(rigid+sumOfFs)
