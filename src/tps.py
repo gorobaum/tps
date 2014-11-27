@@ -3,18 +3,19 @@ import math
 import controlPoints
 
 class TPS:
-	def __init__(self, staticImage, movingImage, staticCPs, movingCPs):
-		self.staticImage = staticImage
-		self.movingImage = movingImage
+	def __init__(self, staticCPs, movingCPs):
 		self.staticCPs = staticCPs
 		self.movingCPs = movingCPs
 
 	def squaredR(self, x, y, xi, yi):
 		return pow((x-xi),2)+pow((y-yi),2)
 
-	def sumInteration(n, x, y, xi, yi):
-		r = squaredR(x,y,xi,yi)
-		return r*math.log(r)
+	def sumInteration(self, x, y, xi, yi):
+		r = self.squaredR(x,y,xi,yi)
+		if r == 0:
+			return 0
+		else:
+			return math.log(r)*r
 
 	def createCoefMatrix(self):
 		numberOfCPs = self.staticCPs.len
@@ -32,6 +33,18 @@ class TPS:
 			for i in range(numberOfCPs):
 				xi = self.staticCPs.xs[i]
 				yi = self.staticCPs.ys[i]
-				newEqu = np.append(newEqu, squaredR(xn,yn,xi,yi))
+				newEqu = np.append(newEqu, self.sumInteration(xn,yn,xi,yi))
 			coefMatrix[n+3] = newEqu
+		return coefMatrix
+
+	def solveLinearEquationFor(self, ordinates):
+		return np.linalg.solve(self.coefMatrix, ordinates)
+
+	def solveLinearEquation(self):
+		self.coefMatrix = self.createCoefMatrix()
+		zeros = np.array([0,0,0])
+		ordinatesX = np.append(zeros, self.movingCPs.xs)
+		print self.solveLinearEquationFor(ordinatesX)
+		ordinatesY = np.append(zeros, self.movingCPs.ys)
+		print self.solveLinearEquationFor(ordinatesY)
 
