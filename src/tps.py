@@ -1,4 +1,5 @@
 import numpy as np
+import time
 import math
 import controlPoints
 
@@ -38,19 +39,19 @@ class TPS:
 		return coefMatrix
 
 	def solveLinearEquationFor(self, ordinates):
-		# print self.coefMatrix
-		# print ordinates
 		return np.linalg.solve(self.coefMatrix, ordinates)
 
 	def solveLinearEquation(self):
 		self.coefMatrix = self.createCoefMatrix()
 		zeros = np.array([0,0,0])
 		ordinatesX = np.append(zeros, self.movingCPs.getXs())
+		start_time = time.time()
 		self.systemX = self.solveLinearEquationFor(ordinatesX)
-		print self.systemX
+		print("--- solveLinearEquationFor X took %s seconds ---" % (time.time() - start_time))
 		ordinatesY = np.append(zeros, self.movingCPs.getYs())
+		start_time = time.time()
 		self.systemY = self.solveLinearEquationFor(ordinatesY)
-		print self.systemY
+		print("--- solveLinearEquationFor Y took %s seconds ---" % (time.time() - start_time))
 
 	def interpolateInX(self, x ,y):
 		rigid = self.systemX[0] + x*self.systemX[1] + y*self.systemX[2]
@@ -77,12 +78,12 @@ class TPS:
 		y = self.interpolateInY(x,y)
 		return (x,y)
 
-	def interpolateInWith(self, x ,y, systemX):
-		rigid = systemX[0] + x*systemX[1] + y*systemX[2]
+	def interpolateInWith(self, x ,y, system):
+		rigid = system[0] + x*system[1] + y*system[2]
 		numberOfCPs = self.staticCPs.len
 		sumOfFs = 0
 		for n in range(numberOfCPs):
 			xi = self.staticCPs.getXs()[n]
 			yi = self.staticCPs.getYs()[n]
-			sumOfFs = sumOfFs + systemX[n+3]*self.sumInteration(x,y,xi,yi)
+			sumOfFs = sumOfFs + system[n+3]*self.sumInteration(x,y,xi,yi)
 		return round(rigid+sumOfFs)
