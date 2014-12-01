@@ -24,15 +24,15 @@ class TPS:
 		ones = np.ones(numberOfCPs)
 		coefMatrix = np.zeros([numberOfEquations, numberOfEquations])
 		coefMatrix[0] = np.append(zeros,ones)
-		coefMatrix[1] = np.append(zeros, self.staticCPs.xs)
-		coefMatrix[2] = np.append(zeros, self.staticCPs.ys)
+		coefMatrix[1] = np.append(zeros, self.staticCPs.getXs())
+		coefMatrix[2] = np.append(zeros, self.staticCPs.getYs())
 		for n in range(numberOfCPs):
-			xn = self.staticCPs.xs[n]
-			yn = self.staticCPs.ys[n]
+			xn = self.staticCPs.getXs()[n]
+			yn = self.staticCPs.getYs()[n]
 			newEqu = np.array([1,xn,yn])
 			for i in range(numberOfCPs):
-				xi = self.staticCPs.xs[i]
-				yi = self.staticCPs.ys[i]
+				xi = self.staticCPs.getXs()[i]
+				yi = self.staticCPs.getYs()[i]
 				newEqu = np.append(newEqu, self.sumInteration(xn,yn,xi,yi))
 			coefMatrix[n+3] = newEqu
 		return coefMatrix
@@ -45,10 +45,10 @@ class TPS:
 	def solveLinearEquation(self):
 		self.coefMatrix = self.createCoefMatrix()
 		zeros = np.array([0,0,0])
-		ordinatesX = np.append(zeros, self.movingCPs.xs)
+		ordinatesX = np.append(zeros, self.movingCPs.getXs())
 		self.systemX = self.solveLinearEquationFor(ordinatesX)
 		print self.systemX
-		ordinatesY = np.append(zeros, self.movingCPs.ys)
+		ordinatesY = np.append(zeros, self.movingCPs.getYs())
 		self.systemY = self.solveLinearEquationFor(ordinatesY)
 		print self.systemY
 
@@ -57,8 +57,8 @@ class TPS:
 		numberOfCPs = self.staticCPs.len
 		sumOfFs = 0
 		for n in range(numberOfCPs):
-			xi = self.staticCPs.xs[n]
-			yi = self.staticCPs.ys[n]
+			xi = self.staticCPs.getXs()[n]
+			yi = self.staticCPs.getYs()[n]
 			sumOfFs = sumOfFs + self.systemX[n+3]*self.sumInteration(x,y,xi,yi)
 		return round(rigid+sumOfFs)
 
@@ -67,8 +67,8 @@ class TPS:
 		numberOfCPs = self.staticCPs.len
 		sumOfFs = 0
 		for n in range(numberOfCPs):
-			xi = self.staticCPs.xs[n]
-			yi = self.staticCPs.ys[n]
+			xi = self.staticCPs.getXs()[n]
+			yi = self.staticCPs.getYs()[n]
 			sumOfFs = sumOfFs + self.systemY[n+3]*self.sumInteration(x,y,xi,yi)
 		return round(rigid+sumOfFs)
 
@@ -82,7 +82,7 @@ class TPS:
 		numberOfCPs = self.staticCPs.len
 		sumOfFs = 0
 		for n in range(numberOfCPs):
-			xi = self.staticCPs.xs[n]
-			yi = self.staticCPs.ys[n]
+			xi = self.staticCPs.getXs()[n]
+			yi = self.staticCPs.getYs()[n]
 			sumOfFs = sumOfFs + systemX[n+3]*self.sumInteration(x,y,xi,yi)
 		return round(rigid+sumOfFs)

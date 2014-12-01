@@ -9,13 +9,11 @@ from scipy import ndimage
 original = scipy.misc.imread("static.png")
 modified = scipy.misc.imread("moving.png")
 
-staticXS = np.array([ 74,148, 18,236, 54,192,158,164,123])
-staticYS = np.array([ 29, 25,118,137,215,215,158,132,146])
-movingXS = np.array([ 74,148, 18,236, 54,192,163,164,98])
-movingYS = np.array([ 29, 25,118,137,215,215,162,133,161])
+staticCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[158,158],[164,132],[123,146]]
+movingCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[163,162],[164,133],[98,161]]
 
-staticCPS = cp.ControlPoints(staticXS, staticYS)
-movingCPS = cp.ControlPoints(movingXS, movingYS)
+staticCPS = cp.ControlPoints(staticCps)
+movingCPS = cp.ControlPoints(movingCps)
 
 tp = tps.TPS(staticCPS, movingCPS)
 tp.solveLinearEquation()
