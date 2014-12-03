@@ -14,13 +14,14 @@ def drawCPs(controlPoints, filename, shape):
 	scipy.misc.imsave(filename, image)
 
 def drawCPsOverImage(image, controlPoints, filename, shape):
+	aux = image
 	for cp in controlPoints.cps:
 		x = int(round(cp[0]))
 		y = int(round(cp[1]))
 		for i in range(x-1,x+2):
 			for j in range(y-1,y+2):
-				image[i,j] = 0
-	scipy.misc.imsave(filename, image)
+				aux[i,j] = 0
+	scipy.misc.imsave(filename, aux)
 
 def createGridImage(shape, gridShape):
 	image = np.ndarray(shape, int)

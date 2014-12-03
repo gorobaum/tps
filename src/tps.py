@@ -53,26 +53,6 @@ class TPS:
 		self.systemY = self.solveLinearEquationFor(ordinatesY)
 		print("--- solveLinearEquationFor Y took %s seconds ---" % (time.time() - start_time))
 
-	def interpolateInWith(self, x ,y):
-		rigid = self.systemX[0] + x*self.systemX[1] + y*self.systemX[2]
-		numberOfCPs = self.staticCPs.len
-		sumOfFs = 0
-		for n in range(numberOfCPs):
-			xi = self.staticCPs.getXs()[n]
-			yi = self.staticCPs.getYs()[n]
-			sumOfFs = sumOfFs + self.systemX[n+3]*self.rlogr(x,y,xi,yi)
-		return round(rigid+sumOfFs)
-
-	def interpolateInY(self, x ,y):
-		rigid = self.systemY[0] + x*self.systemY[1] + y*self.systemY[2]
-		numberOfCPs = self.staticCPs.len
-		sumOfFs = 0
-		for n in range(numberOfCPs):
-			xi = self.staticCPs.getXs()[n]
-			yi = self.staticCPs.getYs()[n]
-			sumOfFs = sumOfFs + self.systemY[n+3]*self.rlogr(x,y,xi,yi)
-		return round(rigid+sumOfFs)
-
 	def interpolateIn(self, x, y):
 		x = self.interpolateInWith(x,y,self.systemX)
 		y = self.interpolateInWith(x,y,self.systemY)

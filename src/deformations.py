@@ -36,6 +36,7 @@ def deformCPsDist(imagePixels, cps):
 
 def deformDist(imagePixels):
 	deformedPixels = np.ndarray(imagePixels.shape)
+	deformedPixels.fill(0)
 	xc = imagePixels.shape[0]/2
 	yc = imagePixels.shape[1]/2
 	for x in range(imagePixels.shape[0]):
