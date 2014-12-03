@@ -5,22 +5,33 @@ import numpy as np
 import tps
 import controlPoints as cp
 import controlPointFactory as cpf
+import deformations
+import draw
 from scipy import ndimage
 
-original = scipy.misc.imread("static.png")
-modified = scipy.misc.imread("moving.png")
+original = scipy.misc.imread(sys.argv[1], True)
+modified = deformations.deformSinusiodal(original)
+scipy.misc.imsave("movingSinusiodal.png", modified)
 
 imageShape = original.shape
-gridShape = [2,2]
+gridShape = [8,8]
 
 staticCps = cpf.createUniformGrid(gridShape, imageShape)
-movingCps = cpf.createUniformGrid(gridShape, imageShape)
+movingCps = deformations.deformCPsSinusiodal(staticCps)
 
 # staticCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[158,158],[164,132],[123,146]]
 # movingCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[163,162],[164,133],[98,161]]
 
 staticCPS = cp.ControlPoints(staticCps)
 movingCPS = cp.ControlPoints(movingCps)
+
+# draw.drawCPs(staticCPS, "staticCPS.png", imageShape)
+# draw.drawCPs(movingCPS, "movingCPS.png", imageShape)
+# draw.drawCPsOverImage(modified, movingCPS, "movingCPSOver.png", imageShape)
+# gridImage = draw.createGridImage(imageShape, gridShape)
+# scipy.misc.imsave("grid.png", gridImage)
+# gridModified = deformations.deformSinusiodal(gridImage)
+# scipy.misc.imsave("modGrid.png", gridModified)
 
 tp = tps.TPS(staticCPS, movingCPS)
 tp.solveLinearEquation()

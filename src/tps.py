@@ -11,7 +11,7 @@ class TPS:
 	def squaredR(self, x, y, xi, yi):
 		return pow((x-xi),2)+pow((y-yi),2)
 
-	def sumInteration(self, x, y, xi, yi):
+	def rlogr(self, x, y, xi, yi):
 		r = self.squaredR(x,y,xi,yi)
 		if r == 0:
 			return 0
@@ -34,7 +34,7 @@ class TPS:
 			for i in range(numberOfCPs):
 				xi = self.staticCPs.getXs()[i]
 				yi = self.staticCPs.getYs()[i]
-				newEqu = np.append(newEqu, self.sumInteration(xn,yn,xi,yi))
+				newEqu = np.append(newEqu, self.rlogr(xn,yn,xi,yi))
 			coefMatrix[n+3] = newEqu
 		return coefMatrix
 
@@ -53,14 +53,14 @@ class TPS:
 		self.systemY = self.solveLinearEquationFor(ordinatesY)
 		print("--- solveLinearEquationFor Y took %s seconds ---" % (time.time() - start_time))
 
-	def interpolateInX(self, x ,y):
+	def interpolateInWith(self, x ,y):
 		rigid = self.systemX[0] + x*self.systemX[1] + y*self.systemX[2]
 		numberOfCPs = self.staticCPs.len
 		sumOfFs = 0
 		for n in range(numberOfCPs):
 			xi = self.staticCPs.getXs()[n]
 			yi = self.staticCPs.getYs()[n]
-			sumOfFs = sumOfFs + self.systemX[n+3]*self.sumInteration(x,y,xi,yi)
+			sumOfFs = sumOfFs + self.systemX[n+3]*self.rlogr(x,y,xi,yi)
 		return round(rigid+sumOfFs)
 
 	def interpolateInY(self, x ,y):
@@ -70,12 +70,12 @@ class TPS:
 		for n in range(numberOfCPs):
 			xi = self.staticCPs.getXs()[n]
 			yi = self.staticCPs.getYs()[n]
-			sumOfFs = sumOfFs + self.systemY[n+3]*self.sumInteration(x,y,xi,yi)
+			sumOfFs = sumOfFs + self.systemY[n+3]*self.rlogr(x,y,xi,yi)
 		return round(rigid+sumOfFs)
 
 	def interpolateIn(self, x, y):
-		x = self.interpolateInX(x,y)
-		y = self.interpolateInY(x,y)
+		x = self.interpolateInWith(x,y,self.systemX)
+		y = self.interpolateInWith(x,y,self.systemY)
 		return (x,y)
 
 	def interpolateInWith(self, x ,y, system):
@@ -85,5 +85,5 @@ class TPS:
 		for n in range(numberOfCPs):
 			xi = self.staticCPs.getXs()[n]
 			yi = self.staticCPs.getYs()[n]
-			sumOfFs = sumOfFs + system[n+3]*self.sumInteration(x,y,xi,yi)
+			sumOfFs = sumOfFs + system[n+3]*self.rlogr(x,y,xi,yi)
 		return round(rigid+sumOfFs)
