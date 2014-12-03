@@ -15,14 +15,14 @@ def drawAuxImages(staticCPS, movingCPS, imageShape, modified):
 	draw.drawCPs(movingCPS, "movingCPS.png", imageShape)
 
 original = scipy.misc.imread(sys.argv[1], True)
-modified = deformations.deformDist(original)
+modified = deformations.deformSinusiodal(original)
 scipy.misc.imsave("movingDist.png", modified)
 
 imageShape = original.shape
-CPGrid = [4,4]
+CPGrid = [2,2]
 
 staticCps = cpf.createUniformGrid(CPGrid, imageShape)
-movingCps = deformations.deformCPsDist(imageShape, staticCps)
+movingCps = deformations.deformCPsSinusiodal(imageShape, staticCps)
 
 # staticCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[158,158],[164,132],[123,146]]
 # movingCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[163,162],[164,133],[98,161]]

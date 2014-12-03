@@ -1,29 +1,34 @@
 import numpy as np
 import math
 
-def deformCPsSinusiodal(cps):
+def deformCPsSinusiodal(imageShape, cps):
 	newCPs = []
 	for cp in cps:
 		x = cp[0]
 		y = cp[1]
 		X = x-8.0*math.sin(y/16.0)
 		Y = y+4.0*math.cos(x/32.0)
-		if X <= 0 or X >= imageShape[0]:
-			continue
-		if Y <= 0 or Y >= imageShape[1]:
-			continue
+		if X < 0:
+			X = 0
+		if X >= imageShape[0]:
+			X = imageShape[0]-1
+		if Y < 0:
+			Y = 0
+		if Y >= imageShape[1]:
+			Y = imageShape[1]-1
 		newCPs.append([X,Y])
 	return newCPs
 
 def deformSinusiodal(imagePixels):
 	deformedPixels = np.ndarray(imagePixels.shape)
+	deformedPixels.fill(255)
 	for x in range(imagePixels.shape[0]):
 		for y in range(imagePixels.shape[1]):
 			X = x-8.0*math.sin(y/16.0)
 			Y = y+4.0*math.cos(x/32.0)
-			if X <= 0 or X >= imageShape[0]:
+			if X <= 0 or X >= imagePixels.shape[0]:
 				continue
-			if Y <= 0 or Y >= imageShape[1]:
+			if Y <= 0 or Y >= imagePixels.shape[1]:
 				continue
 			deformedPixels[X,Y] = bilinear(imagePixels, x, y)
 	return deformedPixels
@@ -40,10 +45,14 @@ def deformCPsDist(imageShape, cps):
 			r = 1
 		X = x + 50.0*(x-xc)/r
 		Y = y + 50.0*(y-yc)/r
-		if X <= 0 or X >= imageShape[0]:
-			continue
-		if Y <= 0 or Y >= imageShape[1]:
-			continue
+		if X < 0:
+			X = 0
+		if X >= imageShape[0]:
+			X = imageShape[0]-1
+		if Y < 0:
+			Y = 0
+		if Y >= imageShape[1]:
+			Y = imageShape[1]-1
 		newCPs.append([X,Y])
 	return newCPs
 
