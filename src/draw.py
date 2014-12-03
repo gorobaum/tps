@@ -8,9 +8,11 @@ def drawCPs(controlPoints, filename, shape):
 	for cp in controlPoints.cps:
 		x = int(round(cp[0]))
 		y = int(round(cp[1]))
-		for i in range(x-1,x+2):
-			for j in range(y-1,y+2):
-				image[i,j] = 0
+		if x >= image.shape[0]:
+			x = image.shape[0]-1
+		if y >= image.shape[1]:
+			y = image.shape[1]-1
+		image[x,y] = 0
 	scipy.misc.imsave(filename, image)
 
 def drawCPsOverImage(image, controlPoints, filename, shape):
@@ -18,9 +20,11 @@ def drawCPsOverImage(image, controlPoints, filename, shape):
 	for cp in controlPoints.cps:
 		x = int(round(cp[0]))
 		y = int(round(cp[1]))
-		for i in range(x-1,x+2):
-			for j in range(y-1,y+2):
-				aux[i,j] = 0
+		if x >= image.shape[0]:
+			x = image.shape[0]-1
+		if y >= image.shape[1]:
+			y = image.shape[1]-1
+		aux[x,y] = 0
 	scipy.misc.imsave(filename, aux)
 
 def createGridImage(shape, gridShape):

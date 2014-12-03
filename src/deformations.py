@@ -8,6 +8,10 @@ def deformCPsSinusiodal(cps):
 		y = cp[1]
 		X = x-8.0*math.sin(y/16.0)
 		Y = y+4.0*math.cos(x/32.0)
+		if X <= 0 or X >= imageShape[0]:
+			continue
+		if Y <= 0 or Y >= imageShape[1]:
+			continue
 		newCPs.append([X,Y])
 	return newCPs
 
@@ -17,26 +21,35 @@ def deformSinusiodal(imagePixels):
 		for y in range(imagePixels.shape[1]):
 			X = x-8.0*math.sin(y/16.0)
 			Y = y+4.0*math.cos(x/32.0)
-			deformedPixels[x,y] = bilinear(imagePixels, X, Y)
+			if X <= 0 or X >= imageShape[0]:
+				continue
+			if Y <= 0 or Y >= imageShape[1]:
+				continue
+			deformedPixels[X,Y] = bilinear(imagePixels, x, y)
 	return deformedPixels
 
-def deformCPsDist(imagePixels, cps):
-	xc = imagePixels.shape[0]/2
-	yc = imagePixels.shape[1]/2
+def deformCPsDist(imageShape, cps):
+	xc = imageShape[0]/2
+	yc = imageShape[1]/2
+	newCPs = []
 	for cp in cps:
 		x = cp[0]
 		y = cp[1]
 		r = math.sqrt(pow(y-yc,2) + pow(x-xc,2))
 		if r == 0:
 			r = 1
-		X = x + 50*(x-xc)/r
-		Y = y + 50*(y-yc)/r
+		X = x + 50.0*(x-xc)/r
+		Y = y + 50.0*(y-yc)/r
+		if X <= 0 or X >= imageShape[0]:
+			continue
+		if Y <= 0 or Y >= imageShape[1]:
+			continue
 		newCPs.append([X,Y])
 	return newCPs
 
 def deformDist(imagePixels):
 	deformedPixels = np.ndarray(imagePixels.shape)
-	deformedPixels.fill(0)
+	deformedPixels.fill(255)
 	xc = imagePixels.shape[0]/2
 	yc = imagePixels.shape[1]/2
 	for x in range(imagePixels.shape[0]):
@@ -44,9 +57,13 @@ def deformDist(imagePixels):
 			r = math.sqrt(pow(y-yc,2) + pow(x-xc,2))
 			if r == 0:
 				r = 1
-			X = x + 50*(x-xc)/r
-			Y = y + 50*(y-yc)/r
-			deformedPixels[x,y] = bilinear(imagePixels, X, Y)
+			X = x + 50.0*(x-xc)/r
+			Y = y + 50.0*(y-yc)/r
+			if X <= 0 or X >= imagePixels.shape[0]:
+				continue
+			if Y <= 0 or Y >= imagePixels.shape[1]:
+				continue
+			deformedPixels[X,Y] = bilinear(imagePixels, x, y)
 	return deformedPixels
 
 def bilinear(imagePixels, x, y):
