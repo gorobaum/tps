@@ -16,10 +16,10 @@ def drawAuxImages(staticCPS, movingCPS, imageShape, modified):
 
 original = scipy.misc.imread(sys.argv[1], True)
 modified = deformations.deformSinusiodal(original)
-scipy.misc.imsave("movingDist.png", modified)
+scipy.misc.imsave("movingSin.png", modified)
 
 imageShape = original.shape
-CPGrid = [2,2]
+CPGrid = [8,8]
 
 staticCps = cpf.createUniformGrid(CPGrid, imageShape)
 movingCps = deformations.deformCPsSinusiodal(imageShape, staticCps)

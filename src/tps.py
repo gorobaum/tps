@@ -59,11 +59,13 @@ class TPS:
 		return (x,y)
 
 	def interpolateInWith(self, x ,y, system):
-		rigid = system[0] + x*system[1] + y*system[2]
+		variableVector = np.zeros(system.shape)
 		numberOfCPs = self.staticCPs.len
-		sumOfFs = 0
+		variableVector[0] = 1.0
+		variableVector[1] = x
+		variableVector[2] = y
 		for n in range(numberOfCPs):
 			xi = self.staticCPs.getXs()[n]
 			yi = self.staticCPs.getYs()[n]
-			sumOfFs = sumOfFs + system[n+3]*self.rlogr(x,y,xi,yi)
-		return round(rigid+sumOfFs)
+			variableVector[n+3] = self.rlogr(x,y,xi,yi)
+		return round(np.dot(variableVector, system))
