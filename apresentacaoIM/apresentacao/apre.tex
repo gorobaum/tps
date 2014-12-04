@@ -1,0 +1,186 @@
+\documentclass[t]{beamer}
+\usepackage{default}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usetheme{Dresden}
+
+\author{Thiago de Gouveia Nunes}
+\title{Registo de Imagens\\ Demons versus TPS}
+\institute{IME - USP}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{bibliography item}{}
+\setbeamertemplate{frametitle continuation}[from second]
+
+\newcommand{\frameofframes}{/}
+\newcommand{\setframeofframes}[1]{\renewcommand{\frameofframes}{#1}}
+
+\setframeofframes{/}
+\makeatletter
+\setbeamertemplate{footline}
+  {%
+    \begin{beamercolorbox}[colsep=1.5pt]{upper separation line foot}
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}%
+      \leavevmode{\usebeamerfont{author in head/foot}\insertshortauthor}%
+      \hfill%
+      {\usebeamerfont{institute in head/foot}\usebeamercolor[fg]{institute in head/foot}\insertshortinstitute}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+      {\usebeamerfont{title in head/foot}\insertshorttitle}%
+      \hfill%
+      {\usebeamerfont{frame number}\usebeamercolor[fg]{frame number}\insertframenumber~\frameofframes~\inserttotalframenumber}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[colsep=1.5pt]{lower separation line foot}
+    \end{beamercolorbox}
+  }
+\makeatother
+
+\begin{document}
+\graphicspath{{images/}}
+\frame{\titlepage}
+
+\section{Revisão de Registro}
+\subsection{}
+
+\begin{frame}
+    Um algoritmo de registro tenta reverter uma deformação de uma imagem a partir de dados obtidos utilizando outra imagem. \\
+    Chamamos de imagem alvo a imagem que sofrerá a ação do algoritmo, enquanto a imagem referência é a imagem usada para calcular os parâmetros da transformação.
+\end{frame}
+
+\begin{frame}
+    \begin{figure}[p]
+        \centering
+        \includegraphics[scale=0.2]{referencia.png}
+        \caption{Imagem Referência}
+        \label{fig:ref}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \begin{figure}[p]
+        \centering
+        \includegraphics[scale=0.2]{alvo.png}
+        \caption{Imagem Alvo}
+        \label{fig:alvo}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    Um algoritmo de registro pode ser separado em:
+    \begin{itemize}
+        \item Transformador
+        \item Medidor
+        \item Otimizador
+        \item Suavizador (Opcional)
+        \item Pré-processador (Opcional)
+    \end{itemize}
+\end{frame}
+
+\section{Demons}
+\subsection{}
+\begin{frame}
+  O algoritmo Demons foi desenvolvido utilizando o método de fluxo óptico. Esse método é usado para encontrar um campo vetorial de deslocamento que leva
+  um volume móvel até outro volume estático. \\
+  A principal hipótese desse método é que as intensidades dos dois volumes são constantes.
+\end{frame}
+
+\begin{frame}
+  A formula abaixo pode ser calculada utilizando a distância entre os dois hiperplanos gerados entre os volumes: \\
+  \begin{equation*}
+    \overrightarrow{v_i} . \overrightarrow{\triangledown}s_i = M(i) - S(i)
+  \end{equation*}
+\end{frame}
+
+\begin{frame}
+  A equação acima tem váriaveis demais, e não pode ser resolvida. Para resolver esse problema, o demons foi desenvolvido usando um processo
+  iterativo. A cada passo um campo novo é calculado, e esse campo é aplicado a um novo volume, chamado de deformado, até que o campo se estabilize.
+\end{frame}
+
+\begin{frame}
+  Algumas variantes do algoritmo:
+  \begin{itemize}
+    \item Cálculo do campo usando as informações dos dois volumes.
+    \item Introdução de um valor para ajuste iterativo do campo.
+    \item Utilização da intensidade do volume móvel ao invés do estático. 
+    \item O algoritmo pode rodar em um modelo piramidal. 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \begin{figure}[p]
+        \centering
+        \includegraphics[scale=0.2]{referencia.png}
+        \caption{Imagem Referência}
+        \label{fig:refd}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \begin{figure}[p]
+        \centering
+        \includegraphics[scale=0.2]{alvo.png}
+        \caption{Imagem Alvo}
+        \label{fig:alvod}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \begin{figure}[p]
+        \centering
+        \includegraphics[scale=0.2]{result.png}
+        \caption{Imagem Registrada}
+        \label{fig:resultd}
+    \end{figure}
+\end{frame}
+
+\section{Thin-Plate Splines}
+\subsection{}
+
+\begin{frame}
+    Podemos abordar o problema de outra maneira. \\
+    Dado os pares de pontos $\{(x_i,y_i),(X_i,Y_i)\}$, queremos encontrar uma transformação que leve cada elemento
+    ao seu par.
+\end{frame}
+
+\begin{frame}
+    Essa transformação pode ser decomposta para cada uma das dimensões da imagem alvo, e assim podemos
+    aproximar sua solução a construção de um híperplano em uma dimensão maior.
+\end{frame}
+
+\begin{frame}
+    O Thin-Plate Splines é uma função interpoladora, dada pela equação:
+    \begin{equation*}
+        f(x,y) = A_1 + A_2x + A_3y + \Sigma_{i=1}^{N} F_ir_i^2 \log{r_i^2}
+    \end{equation*}
+    onde $r^2$ é:
+    \begin{equation*}
+        r^2_i = (x-x_i)^2+(y-y_i)^2+d^2
+    \end{equation*}
+\end{frame}
+
+\section{Referências}
+\subsection{}
+
+\begin{frame}[allowframebreaks]
+  \frametitle<presentation>{Referências}    
+  \begin{thebibliography}{10}    
+  \bibitem{thirion1995fast}
+    Thirion, Jean-Philippe
+    \newblock {\em Fast non-rigid matching of 3D medical images}.
+    \newblock 1995.
+  \bibitem{bookstein1989principal}
+    Bookstein, Fred L.
+    \newblock Principal warps: Thin-plate splines and the decomposition of deformations.
+    \newblock {\em IEEE Transactions on pattern analysis and machine intelligence}, 1989.
+  \end{thebibliography}
+\end{frame}
+
+\end{document}
