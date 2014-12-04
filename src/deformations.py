@@ -6,8 +6,8 @@ def deformCPsSinusiodal(imageShape, cps):
 	for cp in cps:
 		x = cp[0]
 		y = cp[1]
-		X = x+8.0*math.sin(y/16.0)
-		Y = y-4.0*math.cos(x/32.0)
+		X = x-8.0*math.sin(y/16.0)
+		Y = y+4.0*math.cos(x/32.0)
 		if X < 0:
 			X = 0
 		if X >= imageShape[0]:
@@ -43,8 +43,8 @@ def deformCPsDist(imageShape, cps):
 		r = math.sqrt(pow(y-yc,2) + pow(x-xc,2))
 		if r == 0:
 			r = 1
-		X = x - 50.0*(x-xc)/r
-		Y = y - 50.0*(y-yc)/r
+		X = x + 50.0*(x-xc)/r
+		Y = y + 50.0*(y-yc)/r
 		if X < 0:
 			X = 0
 		if X >= imageShape[0]:
