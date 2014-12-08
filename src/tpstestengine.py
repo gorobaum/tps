@@ -16,13 +16,18 @@ class TPSTestEngine:
 		self.movingCPs = cp.ControlPoints(listOfCPS)
 
 	def applySinuosidalDeformation(self):
-		self.movingImage = deformations.deformSinusiodal(self.staticImage)
+		self.movingImage = deformations.deformSinusiodal(self.movingImage)
 		lisfOfMovingCPs = deformations.deformCPsSinusiodal(self.staticImage.shape, self.staticCPs.listOfCPs)
 		self.movingCPs = cp.ControlPoints(lisfOfMovingCPs)
 
 	def applyInvDistDeformation(self):
-		self.movingImage = deformations.deformDist(self.staticImage)
+		self.movingImage = deformations.deformDist(self.movingImage)
 		lisfOfMovingCPs = deformations.deformCPsDist(self.staticImage.shape, self.staticCPs.listOfCPs)
+		self.movingCPs = cp.ControlPoints(lisfOfMovingCPs)
+
+	def applyRotateDeformation(self):
+		self.movingImage = deformations.deformRotate(self.movingImage)
+		lisfOfMovingCPs = deformations.deformCPsRotate(self.staticImage.shape, self.staticCPs.listOfCPs)
 		self.movingCPs = cp.ControlPoints(lisfOfMovingCPs)
 
 	def drawAuxImages(self, sulfix):

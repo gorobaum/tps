@@ -1,6 +1,40 @@
 import numpy as np
 import math
 
+def deformCPsRotate(imageShape, cps):
+	xc = imageShape[0]/2
+	yc = imageShape[1]/2
+	newCPs = []
+	for cp in cps:
+		x = cp[0]-xc
+		y = cp[1]-yc
+		X = x*math.cos(math.pi/6)-y*math.sin(math.pi/6)
+		Y = x*math.sin(math.pi/6)+y*math.cos(math.pi/6)
+		X = X+xc
+		Y = Y+yc
+		if X < 0:
+			X = 0
+		if X >= imageShape[0]:
+			X = imageShape[0]-1
+		if Y < 0:
+			Y = 0
+		if Y >= imageShape[1]:
+			Y = imageShape[1]-1
+		newCPs.append([X,Y])
+	return newCPs
+
+def deformRotate(imagePixels):
+	xc = imagePixels.shape[0]/2
+	yc = imagePixels.shape[1]/2
+	deformedPixels = np.ndarray(imagePixels.shape)
+	deformedPixels.fill(0)
+	for x in range(-xc,xc):
+		for y in range(-yc,yc):
+			X = x*math.cos(math.pi/6)-y*math.sin(math.pi/6)
+			Y = x*math.sin(math.pi/6)+y*math.cos(math.pi/6)
+			deformedPixels[x+xc,y+yc] = bilinear(imagePixels, X+xc, Y+yc)
+	return deformedPixels
+
 def deformCPsSinusiodal(imageShape, cps):
 	newCPs = []
 	for cp in cps:
