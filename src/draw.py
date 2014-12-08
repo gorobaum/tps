@@ -5,7 +5,7 @@ from scipy import ndimage
 def drawCPs(controlPoints, filename, shape):
 	image = np.ndarray(shape, int)
 	image.fill(255)
-	for cp in controlPoints.cps:
+	for cp in controlPoints.listOfCPs:
 		x = int(round(cp[0]))
 		y = int(round(cp[1]))
 		if x >= image.shape[0]:
@@ -17,7 +17,7 @@ def drawCPs(controlPoints, filename, shape):
 
 def drawCPsOverImage(image, controlPoints, filename, shape):
 	aux = image
-	for cp in controlPoints.cps:
+	for cp in controlPoints.listOfCPs:
 		x = int(round(cp[0]))
 		y = int(round(cp[1]))
 		if x >= image.shape[0]:

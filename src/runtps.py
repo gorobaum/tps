@@ -6,47 +6,56 @@ import draw
 import deformations
 import fefinha
 import numpy as np
+import tpstestengine as tte
 import controlPoints as cp
 import controlPointFactory as cpf
 from scipy import ndimage
 
-def drawAuxImages(staticCPS, movingCPS, imageShape, modified):
-	draw.drawCPs(staticCPS, "staticCPS.png", imageShape)
-	draw.drawCPs(movingCPS, "movingCPS.png", imageShape)
-
-original = scipy.misc.imread(sys.argv[1], True)
-modified = deformations.deformSinusiodal(original)
-scipy.misc.imsave("movingSin.png", modified)
-
-imageShape = original.shape
-CPGrid = [8,8]
-
-staticCps = cpf.createUniformGrid(CPGrid, imageShape)
-movingCps = deformations.deformCPsSinusiodal(imageShape, staticCps)
-
 # staticCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[158,158],[164,132],[123,146]]
 # movingCps = [[74,29],[148,25],[18,118],[236,137],[54,215],[192,215],[163,162],[164,133],[98,161]]
 
-staticCPS = cp.ControlPoints(staticCps)
-movingCPS = cp.ControlPoints(movingCps)
+def runTPS(tp, staticImage, movingImage, filename):
+	tp.solveLinearEquation()
 
-drawAuxImages(staticCPS, movingCPS, imageShape, modified)
+	resultImage = np.ndarray(staticImage.shape, staticImage.dtype)
+	bar = fefinha.ProgressBar("Progress",staticImage.shape[0]*staticImage.shape[1])
+	for x in range(staticImage.shape[0]):
+		for y in range(staticImage.shape[1]):
+			newPoint = tp.interpolateIn(x,y)
+			newX = newPoint[0]
+			newY = newPoint[1]
+			if newX >= staticImage.shape[0]:
+				newX = staticImage.shape[0]-1
+			if newY >= staticImage.shape[1]:
+				newY = staticImage.shape[1]-1
+			resultImage[x, y] = movingImage[newX, newY]
+			bar.update()
+	bar.finish()
+	scipy.misc.imsave(filename, resultImage)
 
-tp = tps.TPS(staticCPS, movingCPS)
-tp.solveLinearEquation()
+staticImage = scipy.misc.imread(sys.argv[1], True)
 
-newImage = np.ndarray(original.shape, original.dtype)
-bar = fefinha.ProgressBar("Progress",original.shape[0]*original.shape[1])
-for x in range(original.shape[0]):
-	for y in range(original.shape[1]):
-		newPoint = tp.interpolateIn(x,y)
-		newX = newPoint[0]
-		newY = newPoint[1]
-		if newX >= original.shape[0]:
-			newX = original.shape[0]-1
-		if newY >= original.shape[1]:
-			newY = original.shape[1]-1
-		newImage[x, y] = modified[newX, newY]
-		bar.update()
-bar.finish()
-scipy.misc.imsave("resultUniform.png", newImage)
+tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
+tpsTestEgine.applySinuosidalDeformation()
+tpsTestEgine.drawAuxImages("Sin")
+movingImage = tpsTestEgine.getMovingImage()
+tp = tpsTestEgine.createTPS()
+
+runTPS(tp, staticImage, movingImage, "resultSin.png")
+
+tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
+tpsTestEgine.applyInvDistDeformation()
+tpsTestEgine.drawAuxImages("Dist")
+movingImage = tpsTestEgine.getMovingImage()
+tp = tpsTestEgine.createTPS()
+
+runTPS(tp, staticImage, movingImage, "resultDist.png")
+
+tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
+tpsTestEgine.applySinuosidalDeformation()
+tpsTestEgine.applyInvDistDeformation()
+tpsTestEgine.drawAuxImages("SinDist")
+movingImage = tpsTestEgine.getMovingImage()
+tp = tpsTestEgine.createTPS()
+
+runTPS(tp, staticImage, movingImage, "resultDistSin.png")
