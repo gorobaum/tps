@@ -30,6 +30,11 @@ class TPSTestEngine:
 		lisfOfMovingCPs = deformations.deformCPsRotate(self.staticImage.shape, self.staticCPs.listOfCPs)
 		self.movingCPs = cp.ControlPoints(lisfOfMovingCPs)
 
+	def applyDistSinDeformation(self):
+		self.movingImage = deformations.deformDistSin(self.movingImage)
+		lisfOfMovingCPs = deformations.deformCPsDistSin(self.staticImage.shape, self.staticCPs.listOfCPs)
+		self.movingCPs = cp.ControlPoints(lisfOfMovingCPs)
+
 	def drawAuxImages(self, sulfix):
 		draw.drawCPs(self.staticCPs, "staticCPS"+sulfix+".png", self.staticImage.shape)
 		draw.drawCPs(self.movingCPs, "movingCPS"+sulfix+".png", self.staticImage.shape)

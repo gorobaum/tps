@@ -109,6 +109,48 @@ def deformDist(imagePixels):
 			deformedPixels[x,y] = bilinear(imagePixels, X, Y)
 	return deformedPixels
 
+def deformCPsDistSin(imageShape, cps):
+	xc = imageShape[0]/2
+	yc = imageShape[1]/2
+	newCPs = []
+	for cp in cps:
+		x = cp[0]
+		y = cp[1]
+		r = math.sqrt(pow(y-yc,2) + pow(x-xc,2))
+		if r == 0:
+			r = 1
+		X = x-8.0*math.sin(y/16.0) + 50.0*(x-xc)/r
+		Y = y+4.0*math.cos(x/32.0) + 50.0*(y-yc)/r
+		if X < 0:
+			X = 0
+		if X >= imageShape[0]:
+			X = imageShape[0]-1
+		if Y < 0:
+			Y = 0
+		if Y >= imageShape[1]:
+			Y = imageShape[1]-1
+		newCPs.append([X,Y])
+	return newCPs
+
+def deformDistSin(imagePixels):
+	deformedPixels = np.ndarray(imagePixels.shape)
+	deformedPixels.fill(255)
+	xc = imagePixels.shape[0]/2
+	yc = imagePixels.shape[1]/2
+	for x in range(imagePixels.shape[0]):
+		for y in range(imagePixels.shape[1]):
+			r = math.sqrt(pow(y-yc,2) + pow(x-xc,2))
+			if r == 0:
+				r = 1
+			X = x+8.0*math.sin(y/16.0) - 50.0*(x-xc)/r
+			Y = y-4.0*math.cos(x/32.0) - 50.0*(y-yc)/r
+			if X <= 0 or X >= imagePixels.shape[0]:
+				continue
+			if Y <= 0 or Y >= imagePixels.shape[1]:
+				continue
+			deformedPixels[x,y] = bilinear(imagePixels, X, Y)
+	return deformedPixels
+
 def bilinear(imagePixels, x, y):
 	u = math.trunc(x)
 	v = math.trunc(y)

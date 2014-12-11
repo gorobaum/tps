@@ -45,26 +45,27 @@ def runTPS(tp, staticImage, movingImage, filename):
 
 staticImage = scipy.misc.imread(sys.argv[1], True)
 
+# tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
+# tpsTestEgine.applySinuosidalDeformation()
+# tpsTestEgine.drawAuxImages("Sin")
+# movingImage = tpsTestEgine.getMovingImage()
+# tp = tpsTestEgine.createTPS()
+
+# runTPS(tp, staticImage, movingImage, "resultSin.png")
+
+# tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
+# tpsTestEgine.applyInvDistDeformation()
+# tpsTestEgine.drawAuxImages("Dist")
+# movingImage = tpsTestEgine.getMovingImage()
+# tp = tpsTestEgine.createTPS()
+
+# runTPS(tp, staticImage, movingImage, "resultDist.png")
+
 tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
-tpsTestEgine.applySinuosidalDeformation()
-tpsTestEgine.drawAuxImages("Sin")
+tpsTestEgine.applyDistSinDeformation()
+tpsTestEgine.drawAuxImages("DistSin")
 movingImage = tpsTestEgine.getMovingImage()
 tp = tpsTestEgine.createTPS()
 
-runTPS(tp, staticImage, movingImage, "resultSin.png")
+runTPS(tp, staticImage, movingImage, "resultDistSin.png")
 
-tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
-tpsTestEgine.applyInvDistDeformation()
-tpsTestEgine.drawAuxImages("Dist")
-movingImage = tpsTestEgine.getMovingImage()
-tp = tpsTestEgine.createTPS()
-
-runTPS(tp, staticImage, movingImage, "resultDist.png")
-
-tpsTestEgine = tte.TPSTestEngine(staticImage, [8,8])
-tpsTestEgine.applyRotateDeformation()
-tpsTestEgine.drawAuxImages("Rotate")
-movingImage = tpsTestEgine.getMovingImage()
-tp = tpsTestEgine.createTPS()
-
-runTPS(tp, staticImage, movingImage, "resultRotate.png")
